@@ -1,0 +1,7 @@
+text2
+Der skal udvikles en client kørende i en anden virtuel Linux-maskine (H2). Denne client skal kunne
+hente en fil fra den ovenfor beskrevne server. Client’en sender indledningsvis en tekststreng, som er
+indtastet af operatøren, til serveren. Tekststrengen skal indeholde et filnavn + en eventuel
+stiangivelse til en fil i serveren. Client’en skal modtage filens størrelse fra serveren, hvorefter den
+skal modtage den ønskede fil fejlfrit fra serveren – eller udskrive en fejlmelding hvis filen ikke findes i
+serveren (f.eks. hvis filstørrelsen er 0 bytes). Client’en udskriver løbende status i terminal vinduet

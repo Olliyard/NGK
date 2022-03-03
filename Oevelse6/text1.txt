@@ -1,0 +1,11 @@
+text1
+Der skal udvikles en server som kan modtage en tekststreng fra en client. Serveren skal køre i en
+virtuel Linux-maskine (H1). Tekststrengen skal indeholde et filnavn, eventuel ledsaget af en
+stiangivelse. Tilsammen skal informationen i tekststrengen udpege en fil af en vilkårlig type/størrelse
+i serveren, som en tilsluttet client ønsker at hente fra serveren.
+Hvis filen ikke findes skal serveren returnere en fejlmelding til client’en. Hvis filen findes skal filens
+størrelse overføres til client, hvorefter selve filen overføres fra server til client i segmenter på max.
+1000 bytes ad gangen – indtil filen er overført fuldstændigt. Serveren skal læse 1000 bytes ad
+gangen fra filen og sende disse, og client’en skal modtage og løbende gemme 1000 bytes ad
+gangen, indtil den sidste chunk af data (mindre end 1000 bytes) er overført og gemt. Serveren
+udskriver løbende status i terminal vinduet.
