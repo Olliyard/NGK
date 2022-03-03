@@ -93,17 +93,15 @@ int main(int argc, char *argv[])
         cout << "Connections established from " << inet_ntoa(cli_addr.sin_addr) << " port " << ntohs(cli_addr.sin_port) << endl;
         cout << "Listening for input from client..." << endl;
         
-        //write text over TCP
-        if((w = write(newsockfd, "Server: Hello!", 55)) <0){
-            error("ERROR writing to socket");
-        }
+        //write to server
+        bzero(buffer,SIZE);
+        writeTextTCP(newsockfd, "Hello from server");
 
         //reads text over TCP. Message is stored in 'file'
-        char file[SIZE];
-        if(readTextTCP(file, SIZE, newsockfd) <0){
+        if(readTextTCP(buffer, SIZE, newsockfd) <0){
             error("ERROR on reading");
         }
-        cout << file << endl;
+        cout << buffer << endl;
 
         //writes to the client that it got their message.
         if((n = write(newsockfd, "I got your message", 18)) <0){
