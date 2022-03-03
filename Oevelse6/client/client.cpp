@@ -9,29 +9,8 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include "iknlib.h"
-
+#define SIZE 1000
 using namespace std;
-
-/*
-void receiveFile(string fileName, int socketfd){
-    int n;
-    FILE *fp;
-    char *filename = "recv.txt";
-    char buffer[SIZE];
-    
-    fp = fopen(filename, "w");
-    while (1) {
-        n = recv(sockfd, buffer, SIZE, 0);
-        if (n <= 0){
-        break;
-        return;
-        }
-        fprintf(fp, "%s", buffer);
-        bzero(buffer, SIZE);
-    }
-    return;
-}
-*/
 
 int main(int argc, char *argv[])
 {
@@ -39,7 +18,7 @@ int main(int argc, char *argv[])
     int sockfd, portno, n;
     struct sockaddr_in serv_addr;
     struct hostent *server;
-    char buffer[1000];
+    char buffer[SIZE];
 
     if (argc < 3) {
        error("ERROR no hostname/port");
@@ -65,26 +44,18 @@ int main(int argc, char *argv[])
         error("ERROR connecting");
     }
     
-    bzero(buffer,256);
-    if((n = read(sockfd,buffer,255)) <0){
-        error("ERROR reading from socket");
+    //reads text over TCP. Message is stored in 'file'
+    if(readTextTCP(buffer, SIZE, sockfd) <0){
+        error("ERROR on reading");
     }
     cout << buffer << endl;
     
     cout << "Please enter the message: ";
     
-
-
-    bzero(buffer,256);
-    fgets(buffer,255,stdin);
+    //write to server
+    bzero(buffer,SIZE);
+    fgets(buffer,SIZE,stdin);
     writeTextTCP(sockfd, buffer);
-    /*
-    if((n = write(sockfd,buffer,strlen(buffer))) < 0){
-        error("ERROR writing to socket");
-    }
-    */
-    //receive_file(sockfd);
-    //cout << "File received" << endl;
 
     close(sockfd);
     return 0;
