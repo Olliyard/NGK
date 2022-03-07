@@ -11,17 +11,11 @@
 #include "iknlib.h"
 #define SIZE 1000
 using namespace std;
-/*
-void sendFile(string fileName, long fileSize, int outToClient){
-    char data[SIZE] ={0};
-    while(fgets(data, SIZE, fileName) != NULL){
-        if(send(outToClient, data, sizeof(data), 0) < 0){
-            error("ERROR in sending file");
-        }
-        bzero(data, SIZE);
-    }
+
+void sendFile(string fileName, long fileSize, int outToClient)
+{
+    
 }
-*/
 
 
 int main(int argc, char *argv[])
@@ -30,8 +24,9 @@ int main(int argc, char *argv[])
     //clilen stores address of client and n stores read and write values.
     int sockfd, newsockfd, portno, n, w;
     socklen_t clilen;
-    char buffer[SIZE];
+    char buffer[SIZE], fileBuffer[1000];
     struct sockaddr_in serv_addr, cli_addr;
+    FILE *fp;
 
     //checks for given port number. if invalid, print error code.
     if(argc < 2){
@@ -74,13 +69,14 @@ int main(int argc, char *argv[])
         error("ERROR on binding");
     }
 
-    //listens on the socket for connections. first argument is the sockfd, the second is a wait-queue -
-    //depicting number of connections that can be waiting while processing a connection.
-    if(listen(sockfd,5) <0){
-        error("ERROR on listen");
-    }
-
     while(1){
+
+        //listens on the socket for connections. first argument is the sockfd, the second is a wait-queue -
+        //depicting number of connections that can be waiting while processing a connection.
+        if(listen(sockfd,5) <0){
+        error("ERROR on listen");
+        }
+
         //the next few lines blocks until a client has connected to the server. here, much like the bind(),
         //we look instead at the client connecting to the server. the clients address is given as the second
         //argument and the length of the client address as the third argument. 
@@ -97,17 +93,52 @@ int main(int argc, char *argv[])
         bzero(buffer,SIZE);
         writeTextTCP(newsockfd, "Hello from server");
 
-        //reads text over TCP. Message is stored in 'file'
-        if(readTextTCP(buffer, SIZE, newsockfd) <0){
+        bzero(buffer,SIZE);
+        //reads text over TCP. Message is stored in 'buffer'
+        if(readTextTCP(buffer, sizeof(buffer), newsockfd) <0){
             error("ERROR on reading");
         }
-        cout << buffer << endl;
 
-        //writes to the client that it got their message.
-        if((n = write(newsockfd, "I got your message", 18)) <0){
-            error("ERROR writing to socket");
-        }   
+        //make filepath with NO \n
+        cout << "Filepath given: " << buffer << endl;
+        buffer[strcspn(buffer, "\n")] = 0;
+
+        //Open the file given from client
+        cout << "Opening file..." << endl;
+        if ((fp = fopen(buffer, "r")) == NULL){
+            error("Error on opening file");
+        }
+    
+        //set start/end of the read file
+        fseek(fp, 0, SEEK_END);
+
+        //set file size to the ftell of the filepointer
+        cout << "Getting file size..." << endl;
+        long int size = ftell(fp);
+        rewind(fp);
+
+        //create array to send size of file
+        char sizeArr[255];
+        sprintf(sizeArr, "%ld", size);
+        cout << "Sending file size..." << endl;
+        writeTextTCP(newsockfd, sizeArr);
+
+        //start transferring the file
+        cout << "Starting file transfer..." << endl;
+        while(size >0){
+            if((n = fread(fileBuffer, 1, (size > 1000 ? 1000: size), fp)) < 0){
+                error("Error in reading from socket");
+            }
+            if((n = write(newsockfd, fileBuffer, (size > 1000 ? 1000: size))) < 0){
+                error("Error in writing to socket");
+            }
+            size-=1000;
+        }
+        bzero(fileBuffer, sizeof(fileBuffer));
+        cout << "File transfered" << endl;
+
+        cout << "" << endl;
+        fclose(fp);
     }
-
     return 0;
 }
