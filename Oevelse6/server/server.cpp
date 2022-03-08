@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     //clilen stores address of client and n stores read and write values.
     int sockfd, newsockfd, portno, n, w;
     socklen_t clilen;
-    char buffer[SIZE], fileBuffer[1000];
+    char buffer[256], fileBuffer[SIZE];
     struct sockaddr_in serv_addr, cli_addr;
     FILE *fp;
 
@@ -90,10 +90,10 @@ int main(int argc, char *argv[])
         cout << "Listening for input from client..." << endl;
         
         //write to server
-        bzero(buffer,SIZE);
+        bzero(buffer,256);
         writeTextTCP(newsockfd, "Hello from server");
 
-        bzero(buffer,SIZE);
+        bzero(buffer,256);
         //reads text over TCP. Message is stored in 'buffer'
         if(readTextTCP(buffer, sizeof(buffer), newsockfd) <0){
             error("ERROR on reading");
@@ -125,6 +125,7 @@ int main(int argc, char *argv[])
 
         //start transferring the file
         cout << "Starting file transfer..." << endl;
+        size += 1000;
         while(size >0){
             if((n = fread(fileBuffer, 1, (size > 1000 ? 1000: size), fp)) < 0){
                 error("Error in reading from socket");
