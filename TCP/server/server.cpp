@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     FILE *fp;
 
     //checks for given port number. if invalid, print error code.
-    if(argc < 2){
+    if(argc < 1){
         error("ERROR port not provided");
     }
 
@@ -45,9 +45,12 @@ int main(int argc, char *argv[])
 
     //portnumber is passed as second argument upon running server. 
     //this converts the ascii argument to an int
-    portno = atoi(argv[1]);
-    cout << "Port located: " << portno << endl;
 
+
+    portno = 9000;
+    
+    //portno = atoi(argv[1]);
+    cout << "Port located: " << portno << endl;
 
     //serv add is a struct of type sockaddr_in in which sin_family contains a code for the address family.
     serv_addr.sin_family = AF_INET;
