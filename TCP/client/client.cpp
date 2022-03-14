@@ -63,26 +63,33 @@ int main(int argc, char *argv[])
     writeTextTCP(sockfd, buffer);
 
     buffer[strcspn(buffer, "\n")] = 0;
-    //handle data transfer. Use ofstream (file output) to extract filename from buffer.
-    ofstream outfile(extractFileName(buffer), std::ios::binary);
 
-    cout << "Getting file size..." << endl;
+    //handle data transfer. Use ofstream (file output) to extract filename from buffer.
+    const char *tempBuf = extractFileName(buffer);
+    char tb[256];
+    strncpy(tb, tempBuf, sizeof(tb));
 
     bzero(buffer,256);
     readTextTCP(buffer, sizeof(buffer), sockfd);
-    cout << "Buf: " <<  buffer << endl;
     sscanf(buffer, "%d", &size);
-    cout << "File size (int): " << buffer << endl;
 
+    if(size<=0){
+        error("ERROR file does not exist");
+    }
+
+    ofstream outfile(tb, std::ios::binary);
+
+    cout << "File size (int): " << buffer << endl;
     cout << "Getting file..." << endl;
-    while(size>=0){
+
+    while(size > 0){
         n = read(sockfd, fbuf, (size > 1000 ? 1000 : size));
         if(n <= 0){
             error("ERROR reading from socket");
         }
 
-        outfile.write((char*)fbuf, 1000);
-        size-=1000;
+        outfile.write((char*)fbuf, n);
+        size-=n;
 
         cout << "Size left: " << size << "  Sending size: " << n << endl;
     }
