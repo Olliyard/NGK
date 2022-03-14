@@ -125,6 +125,7 @@ int main(int argc, char *argv[])
 
         //start transferring the file
         cout << "Starting file transfer..." << endl;
+        size += 1000;
         while(size >0){
             if((n = fread(fileBuffer, 1, (size > 1000 ? 1000: size), fp)) < 0){
                 error("Error in reading from socket");
