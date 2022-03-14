@@ -26,10 +26,13 @@ int main(int argc, char *argv[])
     char buffer[256], fbuf[SIZE];
 
     if (argc < 3) {
-       error("ERROR no hostname/port");
+       error("ERROR no hostname/filename");
     }
 
-    portno = atoi(argv[2]);
+    portno = 9000;
+    //portno = atoi(argv[2]);
+
+
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
         error("ERROR opening socket");
     }
@@ -55,11 +58,10 @@ int main(int argc, char *argv[])
         error("ERROR on reading");
     }
     cout << buffer << endl;
-    cout << "Please enter file destination/filename: ";
     
     //write to server
     bzero(buffer,256);
-    fgets(buffer,256,stdin);
+    strcpy(buffer, argv[2]);
     writeTextTCP(sockfd, buffer);
 
     buffer[strcspn(buffer, "\n")] = 0;
