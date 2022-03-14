@@ -6,6 +6,8 @@
 #include <string.h>
 #include <netdb.h>
 #include <stdio.h>
+#include <iostream>
+using namespace std;
 
 void error(const char *msg)
 {
@@ -15,7 +17,7 @@ void error(const char *msg)
 
 int main(int argc, char *argv[])
 {
-   int sock, length, n;
+   int sock, length, n, portno;
    socklen_t fromlen;
    struct sockaddr_in server;
    struct sockaddr_in from;
@@ -36,14 +38,14 @@ int main(int argc, char *argv[])
     bzero((char*) &server, length);
 
     //serv add is a struct of type sockaddr_in in which sin_family contains a code for the address family.
-    serv_addr.sin_family = AF_INET;
+    server.sin_family = AF_INET;
 
     //sin_port contains the port number, however, portno has to be converted to a network byte order in
     //order to be passed through as an argument.
-    serv_addr.sin_port = htons(portno);
+    server.sin_port = htons(portno);
 
     //sin_addr contains s_addr which contains the IP address of the host server.
-    serv_addr.sin_addr.s_addr = INADDR_ANY;
+    server.sin_addr.s_addr = INADDR_ANY;
 
     if(bind(sock, (struct sockaddr *) &server, length) < 0){
         error("ERROR on binding");
@@ -56,7 +58,7 @@ int main(int argc, char *argv[])
         }
         write(1, "Received a datagram: ", 21);
         write(1, buf, n);
-        if ((n = sendto(sock, "Got your messag\n", 17, 0, (struct sockaddr *)&from, fromlen)) < 0){
+        if ((n = sendto(sock, "Got your message\n", 17, 0, (struct sockaddr *)&from, fromlen)) < 0){
             error("ERROR sendto");
         }
 

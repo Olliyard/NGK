@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 
         //Open the file given from client
         cout << "Opening file..." << endl;
-        if ((fp = fopen(buffer, "r")) == NULL){
+        if ((fp = fopen(buffer, "rb")) == NULL){
             error("Error on opening file");
         }
     
@@ -125,15 +125,15 @@ int main(int argc, char *argv[])
 
         //start transferring the file
         cout << "Starting file transfer..." << endl;
-        size += 1000;
-        while(size >0){
-            if((n = fread(fileBuffer, 1, (size > 1000 ? 1000: size), fp)) < 0){
-                error("Error in reading from socket");
+        while(size > 0){
+            n = fread(fileBuffer, 1, (size > 1000 ? 1000: size), fp);
+            n = write(newsockfd, fileBuffer, (size > 1000 ? 1000: size));
+
+            if(n<=0){
+                error("ERROR writing to socket");
             }
-            if((n = write(newsockfd, fileBuffer, (size > 1000 ? 1000: size))) < 0){
-                error("Error in writing to socket");
-            }
-            size-=1000;
+            size-=n;
+            cout << "Size left: " << size << "  Sending size: " << n << endl;
         }
         bzero(fileBuffer, sizeof(fileBuffer));
         cout << "File transfered" << endl;
@@ -141,5 +141,6 @@ int main(int argc, char *argv[])
         cout << "" << endl;
         fclose(fp);
     }
+    close(sockfd);
     return 0;
 }
